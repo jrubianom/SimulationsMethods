@@ -6,18 +6,6 @@
 
 using namespace std;
 
-void FillTiempos(double *Tiempos,double dt,int N){
-  for(int i = 0; i<N; i++){
-    Tiempos[i] = dt*i;
-  }
-}
-
-void print(double *Tiempos, double *Torques, int N){
-  for(int i = 0; i < N; i++){
-    cout << Tiempos[i] << " " << Torques[i] << endl;
-  }
-}
-
 void printMax(double *Torques,Parametros P,int N_iter){
   double *maxtau = max_element(Torques, Torques+N_iter);
   double *mintau = min_element(Torques, Torques+N_iter);
@@ -58,12 +46,10 @@ int main(){
   for(int i=0; i < ks; i++){
     Evolucion(Torques,penduloID,P,file);
     P.K = K[i];
-    if( i == 0 ) FillTiempos(Tiempos,P.dt,N_iter);
     //-------Imprimir taus maximos y tmax---------
     printMax(Torques,P,N_iter);
     //actualizar nombre de file
     file = "Exp"+to_string(i+1)+".txt";
   }
-  //Guardar tmax,tmax y Plotear
   return 0;
 }
