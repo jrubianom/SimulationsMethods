@@ -4,7 +4,9 @@ RUN = ./
 SOURCES = $(wildcard *.cpp)
 DEPENDENCIES = $(SOURCES:%.cpp=.objects/%.o)
 
-.PHONY: main clean oclean
+SHARE_DIR = /media/sf_Arch_data/
+
+.PHONY: main send clean oclean
 
 main: main.x
 	@rm -rf data/*
@@ -22,18 +24,11 @@ main.x: $(DEPENDENCIES)
 	@$(CXX) $(FLAGS) -c $< -o $@
 	@echo -e 'Done!\n'
 
-mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
-mkfile_dir := $(dir $(mkfile_path))
-
-mkfile := $(basename $(mkfile_dir))
-
-aux = $(shell pwd)
-
-graph:
-	echo $(abspath $(lastword $(MAKEFILE_LIST)))
-	echo $(basename $(abspath $(lastword $(MAKEFILE_LIST))))
-	echo $(basename /home/3a/)
-	echo $(basename $(aux))
+send:
+	@echo -e 'Moving graphs ... \c'
+	@rm -rf $(SHARE_DIR)/$(notdir $(shell pwd))
+	@cp -r data $(SHARE_DIR)/$(notdir $(shell pwd))
+	@echo -e 'Done!'
 
 clean:
 	@rm -rf data/* *.x

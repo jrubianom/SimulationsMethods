@@ -14,10 +14,14 @@ struct PEFRL{
 };
 
 struct Config{
-    double m = 1.;
-    double r = 1.;
-    double dt = 0.01;
-    double T = 1.;
+    double m = 1047.;       //Mass ratio
+    double r = 1000.;       //Distance between planets
+    double G = 1.;          //Gravitational constant
+
+    double w = std::sqrt(G*(1.+m)/std::pow(r,3));
+    double T = (2*M_PI/w)*20;
+    double dt = (2*M_PI/w)/100;
+
     double vis_max = 10;
 };
 
@@ -45,7 +49,7 @@ class Body{
         void Add_F(vector3D Fext){F += Fext;};
         void Erase_F(){F.load(0,0,0);};
         void Print(int id, int vis_print){
-            std::string fname = "data/p_" + std::to_string(vis_print) + ".dat";  
+            std::string fname = "data/p_" + std::to_string(vis_print) + ".txt";  
             std::ofstream fout(fname, std::ios::app);
             fout << id << "," << m << "," << r << "," 
                  << R.x() << "," << R.y() << "," << R.z() << ","
@@ -61,8 +65,8 @@ class Body{
 
 class Collider{
     public:
-        Collider(double G = 1.):
-            G(G)
+        Collider(Config config):
+            config(config)
         {};
         void Collide(std::vector<Body> &bodies){
             //Erase forces
@@ -79,11 +83,12 @@ class Collider{
         void Contact(Body &body_1, Body &body_2){ 
             vector3D R12 = body_2.R - body_1.R;
             double d = R12.norm();
-            vector3D F12 = R12*(G*body_1.m*body_2.m*std::pow(d, -3.));
+            vector3D F12 = R12*(config.G*body_1.m*body_2.m*std::pow(d, -3.));
             body_1.Add_F(F12);
             body_2.Add_F(F12*(-1.));
         };
     private:
+        Config config;
         double G;
 };
 
@@ -92,12 +97,18 @@ int main(){
 
     //Create global variables
     Config config;
-    Collider newton;
+    Collider newton(config);
     std::vector<Body> planets(2);
 
     //Init system 
-    planets[0].Set(1., 0., 0., 0., 0., 0.);
-    planets[1].Set(-1., 0., 0., 0., 0., 0.);
+    planets[0].Init(config.m, 1.);
+    planets[1].Init(1., 1.);
+
+    double r1 = config.r*1./(1.+config.m);
+    double r2 = config.r*config.m/(1.+config.m);
+    planets[0].Set(-r1, 0., 0., 0., -r1*config.w, 0.);
+    planets[1].Set(r2, 0., 0., 0., r2*config.w, 0.);
+
     newton.Collide(planets);
 
     const PEFRL pefrl;
