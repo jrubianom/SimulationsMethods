@@ -34,17 +34,27 @@ function main()
     #Plot
     gr()
     plot(Time, State, title="SIR model with β=0.35,γ=0.08", label=["S" "I" "R"])
-    png("graph_1.png")
+    png("graph_a.png")
 
 end
 
 function config()
-    Config = (β=0.35,γ=0.08,
-              t₀= 60.,dt₀ = 0.01,
-              S₀=0.999,I₀=0.001,R₀=0.)
+
+    β   = 0.35
+    γ   = 0.08
+    t₀  = 60.
+    dt₀ = 0.01
+    S₀  = 0.999
+    I₀  = 0.001
+    R₀  = 1-(S₀+I₀)
+
+    Config = (β=β,γ=γ,
+              t₀= t₀,dt₀ = dt₀,
+              S₀=S₀,I₀=I₀,R₀=R₀)
     println("Config parameters:")
     dump(Config)
     println()
+
     return Config
 end
 
