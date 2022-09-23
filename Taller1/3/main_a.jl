@@ -3,9 +3,11 @@ using Combinatorics
 using LinearAlgebra
 using StaticArrays
 using Plots
+using Printf
 
 function main()
 
+    #Initialize system
     Config = config()
 
     t, tᵛ, dt = 0., 0., Config.dt
@@ -17,18 +19,15 @@ function main()
     particles = [Particle() for ii ∈ 1:2]
     particles[1] = Particle(Config.m₁, SVector(r₁,0.,0.), SVector(0.,r₁*Config.ω,0.))
     particles[2] = Particle(Config.m₂, SVector(r₂,0.,0.), SVector(0.,r₂*Config.ω,0.))
-    #particles[3] = Particle(0.001, SVector((1/2)r₂,(√3/2)r₂,0.), SVector((-√3/2)r₂*Config.ω,(1/2)r₂*Config.ω,0.))
     collide!(particles, t)
 
-    open("data_a/data"*string(vis_iteration)*".txt", "w") do io
-        for p in particles
-            println(io, p)
-        end
-    end
+    print_state(particles, vis_iteration)
 
+    #Start simulation
     simulate::Bool = true
-    println("progress\tt\tvisualization")
-    println(trunc(Int, (100*t/Config.tᶠ)),"%\t",t,"\t", vis_iteration)
+    println("progress\tt(T)\tvisualization")
+    println(trunc(Int, (100*t/Config.tᶠ)),"%\t",round(t/Config.T,digits=2),"\t", vis_iteration)
+
     while (simulate)
         #Evolve system
         step!(t, dt, particles)
@@ -38,24 +37,21 @@ function main()
         #Print system
         if (tᵛ >= Config.dtᵛ)
             vis_iteration += 1; tᵛ=0.
-            open("data_a/data"*string(vis_iteration)*".txt", "w") do io
-                for p in particles
-                    println(io, p)
-                end
-            end
+            print_state(particles, vis_iteration)
         end
-        println(trunc(Int, (100*t/Config.tᶠ)),"%\t",t,"\t", vis_iteration)
+        println(trunc(Int, (100*t/Config.tᶠ)),"%\t",round(t/Config.T,digits=2),"\t", vis_iteration)
 
         #Check end
         simulate = t <= Config.tᶠ ? true : false
     end
 
+    #Animate results
     gr()
     anim = @animate for i ∈ 0:vis_iteration
         Data = readdlm("data_a/data$i.txt")
         scatter(Data[:,2],Data[:,3], 
                 lims=(-1100,1100), aspect_ratio=1,
-                title=string(i*Config.dtᵛ), label=["Sun" "Jupiter"])
+                title=string(round(i*Config.dtᵛ/Config.T,digits=2))*"T", label=["Sun" "Jupiter"])
     end
     gif(anim, "data_a/anim.gif", fps = 5)
 
@@ -75,7 +71,8 @@ function config()
     dtᵛ = T/10
 
     Config = (m₁=m₁,m₂=m₂,r=r,
-              ω=ω,tᶠ=tᶠ,dt=dt,dtᵛ=dtᵛ)
+              ω=ω, T=T,
+              tᶠ=tᶠ,dt=dt,dtᵛ=dtᵛ)
     println("Config parameters:")
     dump(Config)
     println()
@@ -97,24 +94,13 @@ struct Particle
 
 end
 
-Base.show(io::IO, p::Particle) = print(io, p.m," ",
-                                           p.R[1]," ",p.R[2]," ",p.R[3]," ",
-                                           p.V[1]," ",p.V[2]," ",p.V[3]," ",
-                                           p.F[1]," ",p.F[2]," ",p.F[3])
+move_pos(p::Particle, dt::Float64) = Particle(p.m, p.R.+dt.*p.V, p.V, p.F)
 
-function move_pos(p::Particle, dt::Real)
-    return Particle(p.m, p.R.+dt.*p.V, p.V, p.F)
-end
+move_vel(p::Particle, dt::Float64) = Particle(p.m, p.R, p.V.+(dt/p.m).*p.F, p.F)
 
-function move_vel(p::Particle, dt::Real)
-    return Particle(p.m, p.R, p.V.+(dt/p.m).*p.F, p.F)
-end
+set_force(p::Particle, F::SVector{3,Float64}) = Particle(p.m, p.R, p.V, F)
 
-function set_force(p::Particle, F::SVector{3,Float64})
-    return Particle(p.m, p.R, p.V, F)
-end
-
-function collide!(particles::Array{Particle}, t::Real)
+function collide!(particles::Array{Particle}, t::Float64)
 
     #Global forces
     for i ∈ eachindex(particles)
@@ -134,7 +120,7 @@ function collide!(particles::Array{Particle}, t::Real)
 
 end
 
-function step!(t::Real, dt::Real, particles::Array{Particle})
+function step!(t::Real, dt::Float64, particles::Array{Particle})
 
     const1::Float64 = 0.1786178958448091;   #ζ
     const4::Float64 = -0.2123418310626054;  #λ
@@ -158,6 +144,17 @@ function step!(t::Real, dt::Real, particles::Array{Particle})
 
     return
 
+end
+
+function print_state(particles::Array{Particle}, vis_iteration::Int)
+    open("data_a/data"*string(vis_iteration)*".txt", "w") do io
+        for p in particles
+            println(io, p.m," ",
+                        p.R[1]," ",p.R[2]," ",p.R[3]," ",
+                        p.V[1]," ",p.V[2]," ",p.V[3]," ",
+                        p.F[1]," ",p.F[2]," ",p.F[3])
+        end
+    end
 end
 
 main()
