@@ -15,17 +15,21 @@ function main()
     r₁ = -Config.r*Config.m₂/(Config.m₁+Config.m₂)
     r₂ =  Config.r*Config.m₁/(Config.m₁+Config.m₂)
 
-    particles = [Particle() for ii ∈ 1:2]
+    particles = [Particle() for ii ∈ 1:3]
     particles[1] = Particle(Config.m₁, SVector(r₁,0.,0.), SVector(0.,r₁*Config.ω,0.))
     particles[2] = Particle(Config.m₂, SVector(r₂,0.,0.), SVector(0.,r₂*Config.ω,0.))
+    particles[3] = Particle(0.005, SVector((1/2)r₂,(√3/2)r₂,0.), SVector((-√3/2)r₂*Config.ω,(1/2)r₂*Config.ω,0.))
     collide!(particles, t)
 
-    print_state(particles, vis_iteration)
+    print_state(particles, atan(particles[2].R[2],particles[2].R[1]), vis_iteration)
 
     #Start simulation
     simulate::Bool = true
     println("progress\tt(T)\tvisualization")
     println(trunc(Int, (100*t/Config.tᶠ)),"%\t",round(t/Config.T,digits=2),"\t", vis_iteration)
+
+    x_history = [(1/2)r₂] 
+    t_history = [t]
 
     while (simulate)
         #Evolve system
@@ -33,10 +37,14 @@ function main()
         t += dt
         tᵛ += dt
 
+        θ = atan(particles[2].R[2],particles[2].R[1])
+        push!(x_history, particles[3].R[1]*cos(θ)+particles[3].R[2]*sin(θ))
+        push!(t_history, t/Config.T)
+
         #Print system
         if (tᵛ >= Config.dtᵛ)
             vis_iteration += 1; tᵛ=0.
-            print_state(particles, vis_iteration)
+            print_state(particles, atan(particles[2].R[2],particles[2].R[1]), vis_iteration)
         end
         println(trunc(Int, (100*t/Config.tᶠ)),"%\t",round(t/Config.T,digits=2),"\t", vis_iteration)
 
@@ -46,13 +54,8 @@ function main()
 
     #Animate results
     gr()
-    anim = @animate for i ∈ 0:vis_iteration
-        Data = readdlm("data_a/data$i.txt")
-        scatter(Data[:,2],Data[:,3], 
-                lims=(-1100,1100), aspect_ratio=1,
-                title=string(round(i*Config.dtᵛ/Config.T,digits=2))*"T", label=["Sun" "Jupiter"])
-    end
-    gif(anim, "data_a/anim.gif", fps = 5)
+    plot(t_history, x_history, xlims=(0.,20.))
+    png("data_e/graph.png")
 
 end
 
@@ -145,13 +148,13 @@ function step!(t::Real, dt::Float64, particles::Array{Particle})
 
 end
 
-function print_state(particles::Array{Particle}, vis_iteration::Int)
-    open("data_a/data"*string(vis_iteration)*".txt", "w") do io
+function print_state(particles::Array{Particle}, θ::Float64, vis_iteration::Int)
+    open("data_d/data"*string(vis_iteration)*".txt", "w") do io
         for p in particles
             println(io, p.m," ",
-                        p.R[1]," ",p.R[2]," ",p.R[3]," ",
-                        p.V[1]," ",p.V[2]," ",p.V[3]," ",
-                        p.F[1]," ",p.F[2]," ",p.F[3])
+                        p.R[1]*cos(θ)+p.R[2]*sin(θ)," ",p.R[2]*cos(θ)-p.R[1]*sin(θ)," ",p.R[3]," ",
+                        p.V[1]*cos(θ)+p.V[2]*sin(θ)," ",p.V[2]*cos(θ)-p.V[1]*sin(θ)," ",p.V[3]," ",
+                        p.F[1]*cos(θ)+p.F[2]*sin(θ)," ",p.F[2]*cos(θ)-p.F[1]*sin(θ)," ",p.F[3])
         end
     end
 end
