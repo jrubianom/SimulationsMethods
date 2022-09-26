@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cmath>
+#include <string>
+#include "fstream"
 
 double ErrMax = 1e-8;
 
@@ -37,6 +39,14 @@ double CerosPorBiseccion(double alpha, double a, double b,int n){
   return (a+b)/2;
 }
 
-double ZeroBessel(double alpha,double a,double b,int n = 50){
+double ZeroBessel(double alpha,double a,double b,int n = 100){
   return CerosPorBiseccion(alpha,a,b,n);
+}
+
+void printBessel(double alpha,double x0,double xmax,double lambda, double dx,std::string namefile, int n = 100){
+  std::ofstream file(namefile);
+  for(double x = x0; x < xmax; x += dx){
+    file << x << " " << Bessel_alpha(alpha,lambda*x,n) << std::endl;
+  }
+  file.close();
 }

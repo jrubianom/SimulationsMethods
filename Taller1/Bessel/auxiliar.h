@@ -1,6 +1,9 @@
+#include <fstream>
 #include <iostream>
 #include <cmath>
 #include "ZerosBessel.h"
+#include <string>
+#include "fstream"
 
 class parameters{
     public:
@@ -52,10 +55,20 @@ void RungeKutta(double &x1, double &x2,double &t,
                 const parameters p,
                 double (*f1)(double,double,double,const parameters),
                 double (*f2)(double,double,double,const parameters),
-                bool print = true){
-    double dt = p.dt;
+                std::string namefile){
+    std::ofstream file(namefile);
     while(t < p.maxTimeRK){
         RungeKuttaOneStep(x1,x2,t,p,f1,f2);
-        if(print) std::cout << t << "\t" << x1 << "\t" << x2 << "\t" << std::endl;
+        file << t << "\t" << x1 << "\t" << x2 << "\t" << std::endl;
+    }
+    file.close();
+}
+
+void RungeKutta(double &x1, double &x2,double &t,
+                const parameters p,
+                double (*f1)(double,double,double,const parameters),
+                double (*f2)(double,double,double,const parameters)){
+    while(t < p.maxTimeRK){
+        RungeKuttaOneStep(x1,x2,t,p,f1,f2);
     }
 }

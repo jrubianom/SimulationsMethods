@@ -21,7 +21,7 @@ double f2(double t,double x1,double x2, const parameters p){
 double F_lambda(double lambda,parameters p){
     p.lambda = lambda;
     double x1 = 0, x2 = 1, r = p.t0;
-    RungeKutta(x1,x2,r,p,&f1,&f2,false);
+    RungeKutta(x1,x2,r,p,&f1,&f2);
     return x2;
 }
 

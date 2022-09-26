@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <cmath>
 #include "auxiliar.h"
@@ -22,6 +23,7 @@ int main(){
     double x1 = 0, x2 = 1, r = 0.01,dr = 0.1;
     parameters p;
     p.lambda = 1; p.maxTimeRK = 10; p.dt = dr;
-    RungeKutta(x1,x2,r,p,&f1,&f2);
+    string filename = "Lambda1.txt";
+    RungeKutta(x1,x2,r,p,&f1,&f2,filename);
     return 0;
 }
