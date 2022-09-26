@@ -6,7 +6,8 @@ fit f(x) "Tabla.txt" using (log($1)):(log($2)) via m,b
 fit g(x) "Tabla.txt" using (log($1)):(log($3)) via m2,b2
 plot "Tabla.txt" using (log($1)):(log($2)) title "{/Symbol t} max" ,f(x) title "fit {/Symbol t}","Tabla.txt" using (log($1)):(log($3)) title "t max" ,g(x) title "fit t"
 
-h(x,y) = (x-0.17456)*(y**(-m2))
+tmin = system("awk 'NR == 1 {print $1}' Exp0.txt")
+h(x,y) = (x-tmin)*(y**(-m2))
 h2(x,y) = x*(y**(-m))
 h3(x,y) = x*(y**(-m2))
 

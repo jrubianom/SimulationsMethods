@@ -161,6 +161,7 @@ void Evolucion(int penduloID,Parametros &P,string  fname){
   const double g=P.g, K=P.K,alpha=P.alpha;
   const double NT=P.NT;
   const int TUtcuadro = P.TUtcuadro;
+  bool choque = false, aux = true;
   ///////////////////////////////
   Cuerpo Pendulo[N];
   Colisionador Newton; Newton.Inicie(g,K,alpha,N);
@@ -213,7 +214,14 @@ void Evolucion(int penduloID,Parametros &P,string  fname){
     for(i=0;i<N;i++) Pendulo[i].Mueva_theta(dt,Zeta);
 
     tau = Pendulo[penduloID].Gettau();
-    if(t >= T/4.0) file << t <<" "<<tau<<" "<<endl;
+    //Empezar lectura de datos cuando inicia choque
+    if(tau != 0 && aux){
+      choque = true;
+      aux = false;
+    }
+
+    if(choque) file << t <<" "<<tau<<" "<<endl;
+
     if(j == 0){
       taumax = tau;
       taumin = tau;
@@ -222,7 +230,7 @@ void Evolucion(int penduloID,Parametros &P,string  fname){
   }
   file.close();
   AnimacionFile.close();
-  cout << K << " " << taumax << " " << (timemin-timemax)/2 << endl;
+  cout << K << " " << taumax << " " << timemin-timemax << endl;
 }
 
 void CantidadesMaximas(double &taumax,double &taumin,double
