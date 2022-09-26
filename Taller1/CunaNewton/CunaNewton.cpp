@@ -34,8 +34,8 @@ int main(){
   int penduloID = 1;
 
   for(int i=0; i < ks; i++){
-    Evolucion(penduloID,P,file);
     P.K = K[i];
+    Evolucion(penduloID,P,file);
     //Crear nuevo file para la actual K
     file = "Exp"+to_string(i+1)+".txt";
   }
