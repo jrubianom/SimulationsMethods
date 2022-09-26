@@ -10,7 +10,8 @@ plota: CunaNewton.x
 
 plotcd:
 	gnuplot plotcd.gp
-	xpdf C-D.pdf
+	xpdf C.pdf
+	xpdf D.pdf
 
 Animacion: CunaNewton.x
 	gnuplot AnimacionData.txt
