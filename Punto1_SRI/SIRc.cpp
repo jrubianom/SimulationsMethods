@@ -25,6 +25,7 @@ void SRI::Inicie(double beta0, double gamma0, double t0, double s0, double i0, d
 
 void SRI::UnPasoDeRungeKutta4( double dt){
     double ds1, ds2, ds3, ds4,   di1, di2, di3, di4, dr1, dr2, dr3, dr4;
+    //Error
     ds1 = dt* ds_dt();       di1 = dt* di_dt();
     ds2 = dt* ds_dt();       di2 = dt* di_dt();
     ds3 = dt* ds_dt();       di3 = dt* di_dt();
