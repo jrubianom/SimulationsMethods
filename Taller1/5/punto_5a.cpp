@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cmath>
-#include "../../Vector3D/vector.h"
+#include "vector.h"
 
 //Constantes globales
 const int N=1;
@@ -91,8 +91,8 @@ void Colisionador::Force_betw(Cuerpo & Planeta1, Cuerpo & Planeta2){
 //----------- Funciones Globales -----------
 
 void InicieAnimacion(void){
-  std::cout<<"set terminal gif animate"<<std::endl;
-  std::cout<<"set output 'data/Taller1/punto_5a.gif'"<<std::endl;
+  //std::cout<<"set terminal gif animate"<<std::endl;
+  //std::cout<<"set output 'data/punto_5a.gif'"<<std::endl;
   std::cout<<"unset key"<<std::endl;
   std::cout<<"set xrange[0:15]"<<std::endl;
   std::cout<<"set yrange[-5:5]"<<std::endl;
@@ -108,15 +108,6 @@ void TermineCuadro(void){
     std::cout<<std::endl;
 }
 
-// void Graficar_rotado(Cuerpo *planetas){
-// 	double x_jupiter,y_jupiter,xpos,ypos;
-// 	x_jupiter=planeta[1].Getx();
-// 	y_jupiter=(planeta[1]
-// 	for(int i=0; i<N; i++){
-// 		xpos=(planeta)
-// 	}
-// }
-
 
 int main(){
 	Cuerpo planeta[N];
@@ -130,18 +121,18 @@ int main(){
 
 	planeta[0].Init(x0,0,0,V0,0,0,m,2.5);
 
-	InicieAnimacion();
+	//InicieAnimacion();
 	for(t=0,tdibujo=0; t<tmax; t+=dt,tdibujo+=dt){
 		//Dibujar animación
-		if(tdibujo>tcuadro){
-			InicieCuadro();
-			for(i=0;i<N;i++) planeta[i].Dibujese();
-			TermineCuadro();
-			tdibujo=0;
-		}
+		// if(tdibujo>tcuadro){
+		// 	InicieCuadro();
+		// 	for(i=0;i<N;i++) planeta[i].Dibujese();
+		// 	TermineCuadro();
+		// 	tdibujo=0;
+		// }
 
 		//Dibujar trayectoria
-		//std::cout << t <<"\t"<< planeta[0].Getx() << std::endl;
+		std::cout << t <<"\t"<< planeta[0].Getx() << std::endl;
 
 		//Move by PEFRL
 		for(i=0;i<N;i++) planeta[i].Move_r(dt,Zeta);
