@@ -1,0 +1,31 @@
+Para correr poner en la terminal
+
+todos) make
+a) make plot1
+b) make plot2
+c y d) make Table
+
+
+Las gráficas y tabla se presentan en:
+
+a) Bessela.pdf
+b) Besselb.pdf
+c) TodosModos.pdf
+d) Modos#.pdf (# es un número) Tabla.dat
+
+
+Parte PUNTO B
+Los lambda aproximados calculados a ojo en la grafica son
+lambda 0 = 2.5
+lambda 1 = 5.5
+lambda 2 = 8.75
+lambda 3 = 11.8
+lambda 4 = 15.25
+
+
+Los programas usados en cada punto son
+
+a) Bessela.cpp Bessela.gp 
+b) Besselb.cpp Besselb.gp 
+c y d) EigenBessel.cpp Normales.gp ZerosBessel.h
+todos usan) auxiliar.h
