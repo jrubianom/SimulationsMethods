@@ -13,7 +13,6 @@ public:
     void Inicie(double lambda0, double r0, double dr, double R0, double V0);
     double Get_r(void){return r;}
     double Get_R(void){return R;}
-    double Get_lambda(void){return lambda;}
     double dR_dr(double r0, double R0, double V0){return V0;}
     double dV_dr(double r0, double R0, double V0){return -(lambda*lambda*R0 + V0*pow(r0,-1));}
     void UnPasoDeRungeKutta4(void);
