@@ -130,7 +130,10 @@ void LatticeBoltzmann::Collision(void){
         n0=n(ix,iy,i);
 
         if(ix > 100 && ix <200 && check_mirror>0){
-          fnew[n0] = f[n(ix,iy,(Q-1-i)%(Q-1))];
+          if(i==0)
+            fnew[n0] = f[n(ix,iy,0)];
+          else
+            fnew[n0] = f[n(ix,iy,(Q-1+i-1+(Q-1)/2)%(Q-1)+1)];
         }else
           fnew[n0]=UmUtau*f[n0]+Utau*feq(rho0,Jx0,Jy0,i,ix,iy);
       }
