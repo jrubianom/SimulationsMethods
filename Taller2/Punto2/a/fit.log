@@ -1,0 +1,36 @@
+
+
+*******************************************************************************
+Sun Nov 13 20:47:48 2022
+
+
+FIT:    data read from "Pendiente.dat"
+        format = z
+        #datapoints = 376
+        residuals are weighted equally (unit weight)
+
+function used for fitting: F(t)
+	F(t) = a* t+ b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 3.6161250000e+06   0.00e+00  8.01e+01    1.000000e+00   1.000000e+00
+   5 4.8001534487e+04  -1.10e-01  8.01e-04    6.522412e-01  -5.705860e+01
+
+After 5 iterations the fit converged.
+final sum of squares of residuals : 48001.5
+rel. change during last iteration : -1.10152e-06
+
+degrees of freedom    (FIT_NDF)                        : 374
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 11.329
+variance of residuals (reduced chisquare) = WSSR/ndf   : 128.346
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 0.652241         +/- 0.1255       (19.25%)
+b               = -57.0586         +/- 14.21        (24.91%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b              -0.999  1.000 
