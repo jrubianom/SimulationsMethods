@@ -4,13 +4,13 @@
 using namespace std;
 
 const int Nx=256,Ny=256,Q=4;
-const double p=0.25,p0=0.25;
+const double p=0.3,p0=0.5;
 
 //-------Clase LatticeGas
 
 class LatticeGas{
     private:
-        int V[Q]; //V[i] i = 0 (up), i=1 (right),i=2 (down), i=3 (left)
+        int V[Q]; //V[i] i = 0 (up), i=1 (left),i=2 (down), i=3 (right)
         int n[Nx*Ny][Q],nnew[Nx*Ny][Q];  //n[ix][i]
     public:
         LatticeGas();
@@ -26,7 +26,8 @@ class LatticeGas{
 };
 
 LatticeGas::LatticeGas(){
-    V[0]=1;V[1]=1,V[2]=-1,V[3]=-1;
+    //V[i] i = 0 (up), i=1 (left),i=2 (down), i=3 (right)
+    V[0]=1;V[1]=-1,V[2]=-1,V[3]=1; // orden anti horario }
 }
 
 
@@ -41,7 +42,6 @@ void LatticeGas::Borrese(){
         }
     }
 }
-
 void LatticeGas::Inicie(int N, double mux,double muy, double sigmax,double sigmay, Crandom & ran64){
     int ix,iy,i,current_index;
     while(N > 0){
@@ -57,27 +57,26 @@ void LatticeGas::Inicie(int N, double mux,double muy, double sigmax,double sigma
     }
 }
 
-
-
 void LatticeGas::Colisione(Crandom & ran64){
     double outp;
     int ci;// current_index
+    int i;
     for(int ix=0;ix<Nx;ix++){//Para cada celda
         for(int iy=0;iy < Ny; iy++){
-            outp=ran64.r();
+            outp=ran64.r(); //Genero numero al azar entre 0 y 1
             ci = index(ix,iy);
-            if(p0 < outp && outp <= p0+p) //Genero numero al azar, sin es mayor que p, volteo
-                for(int i=0; i < Q; i++)
-                    nnew[ci][i]=n[ci][(i+1)%4];
+            if(p0 < outp && outp <= (p0+p)) //giro de 90° anti horario
+                for(i=0; i < Q; i++)
+                    nnew[ci][(i+1)%4]=n[ci][i];
 
-            else if(p0+p < outp && outp <= p0+2*p)
-                for(int i=0; i < Q; i++)
-                    nnew[ci][i]=n[ci][(i+3)%4];
-            else if((p0+2*p) < outp)
-                for(int i=0; i < Q; i++)
-                    nnew[ci][i]=n[ci][(i+2)%4];
+            else if((p0+p) < outp && outp <= (p0+2*p)) //giro de 270° anti horario
+                for(i=0; i < Q; i++)
+                    nnew[ci][(i+3)%4]=n[ci][i];
+            else if((p0+2*p) < outp) //giro de 180° anti horario
+                for(i=0; i < Q; i++)
+                    nnew[ci][(i+2)%4]=n[ci][i];
             else
-                for(int i=0; i < Q; i++)
+                for(i=0; i < Q; i++) //giro de 0°
                     nnew[ci][i]=n[ci][i];
         }
     }
@@ -90,22 +89,23 @@ void LatticeGas::Adveccione(){
         for(int iy=0;iy < Ny; iy++){
             ci=index(ix,iy);
             for(int i =0;i<Q;i++)
-                if(i%2 == 0){
+                if(i%2 == 0){ //into cells top and bottom
                     ni=index(ix,iy+V[i]);
                     n[ni][i]=nnew[ci][i];
                 }
-                else{
+                else{//into cells right and left
                     ni=index(ix+V[i],iy);
                     n[ni][i]=nnew[ci][i];
                 }
         }
 }
 
+
 double LatticeGas::rho(int ix,int iy){
     double sum = 0;
     int ci = index(ix,iy);
     for(int i = 0; i < Q; i++){
-        sum+=n[ci][i];
+        sum+=nnew[ci][i];
     }
     return sum;
 }
@@ -113,8 +113,11 @@ double LatticeGas::rho(int ix,int iy){
 double LatticeGas::varianza(){
     int ix,iy; double N,Xprom,Yprom,Sigma2;
     for(N=0,ix=0;ix<Nx;ix++)
-        for(iy=0;iy<Ny; iy++)
+        for(iy=0;iy<Ny; iy++){
             N+=rho(ix,iy);
+            //cout << rho(ix,iy) << endl;
+        }
+
     for(Xprom=0,Yprom=0,ix=0;ix<Nx;ix++)
         for(iy=0;iy<Ny; iy++){
             Xprom+=ix*rho(ix,iy);
@@ -134,7 +137,7 @@ double LatticeGas::varianza(){
 //------------Programa Principal-------------
 
 int main(){
-    int N = 2400, tmax = 350;
+    int N = 2400, tmax = 400;
     double sigma = 16;
     Crandom ran64(1);
     LatticeGas Diffusion;
