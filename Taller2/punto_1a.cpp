@@ -3,11 +3,11 @@
 #include "../Random64.h"
 #include "fstream"
 
-const int Lx=100;
-const int Ly=100;
+const int Lx=256;
+const int Ly=256;
 const int L=Lx*Ly;
-const double p0=0.3;
-const double p=0.1;
+const double p0=0.25;
+const double p=0.25;
 
 const int Q=4;
 
@@ -69,9 +69,10 @@ void LatticeGas::Show(){
 }
 
 void LatticeGas::Colisione(Crandom & ran64){
-  double ran=ran64.r();
+  double ran;
   for(int ir=0;ir<L;ir++){
     //No rotar
+    ran=ran64.r();
     if(ran < p0){
       nnew[ir][0]=n[ir][0]; nnew[ir][1]=n[ir][1];
       nnew[ir][2]=n[ir][2]; nnew[ir][3]=n[ir][3];
@@ -95,14 +96,13 @@ void LatticeGas::Colisione(Crandom & ran64){
 }
 
 void LatticeGas::Adveccione(){
-  int iy;
+  int ix, iy;
   for(int ir=0; ir <L;ir++){
-    iy=floor(ir/Lx);
+    ix=ir%Lx; iy=floor(ir/Lx);
     for(int i=0;i <Q;i++){
       //Cuando i=0 o i=2 se mueve en x
-      if(i%2==0) n[((ir+V[i]+Lx)%Lx)+Lx*iy][i]=nnew[ir][i];
-      //Cuando i=1 o i=3 se mueve en y
-      else n[(ir+Lx*V[i]+L)%L][i]=nnew[ir][i];
+      if(i%2==0) {n[((ix+V[i]+Lx)%Lx)+Lx*iy][i]=nnew[ir][i];}
+      else {n[(ir+Lx*V[i]+L)%L][i]=nnew[ir][i];}
     }
   }
 }
@@ -148,7 +148,7 @@ void LatticeGas::GrafiqueDistribucion(std::string filename){
 int main(){
   LatticeGas Difusion;
   Crandom ran64(1);
-  int N=100; double mu=Lx/2, sigma=Lx/16;
+  int N=2400; double mu=Lx/2, sigma=16;
   int t, tmax=350;
 
   Difusion.Borrar();
@@ -157,7 +157,7 @@ int main(){
     Difusion.Colisione(ran64);
     Difusion.Adveccione();
     std::cout << t << "\t" << Difusion.Varianza() <<std::endl;
-    if(t%75==0)  Difusion.GrafiqueDistribucion("data/Taller2/punto_1a_dist"+std::to_string(t)+".dat");
+    if(t%50==0) Difusion.GrafiqueDistribucion("data/Taller2/punto_1a_dist"+std::to_string(t)+".dat");
   }
   //Difusion.Show();
 
