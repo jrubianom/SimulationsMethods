@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-R, F, C, C2 = np.loadtxt("dragCoeff_vs_reynosldNumber.dat", unpack=True)
+R, C2 = np.loadtxt("dragCoeff_vs_reynosldNumber.dat", unpack=True)
 
 plt.plot(R, C2)
 plt.xlabel("Reynolds number")
