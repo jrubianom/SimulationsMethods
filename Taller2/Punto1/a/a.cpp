@@ -1,7 +1,16 @@
 #include <iostream>
 #include <cmath>
 #include "fstream"
-#include "/home/live/repos/Files/Random64.h"
+#include "Random64.h"
+
+
+/*
+ Para correr la simulacion haga una copia  del archivo a.cpp
+y nombrela como main.cpp.
+Luego haga make
+Así obtendra la grafica y el ajuste lineal asociado.
+Si desea puede cambiar los parametros en este archivo como p,p0,N y tmax
+*/
 
 using namespace std;
 
