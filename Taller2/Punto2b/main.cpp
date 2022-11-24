@@ -3,6 +3,15 @@
 #include <cmath>
 using namespace std;
 
+/*
+  Para correr la simulacion ejecute make
+  Así obtendra la grafica.
+  Si desea puede cambiar los parametros en este archivo.
+  Adicionalmente si desea hacer el gif, entonces
+  entre al directorio AnimationCode cree un directorio llamado  Animacion
+  y ejecute make
+*/
+
 
 //Indices de refraccion
 
