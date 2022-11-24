@@ -10,6 +10,9 @@ using namespace std;
   de arrastre para varias   velocidades del fluido (Ufan0).
   Además, en cada iteración computa también el número de Reynolds e imprime
   los resultados a un archivo de datos ("dragCoeff_vs_reynosldNumber.dat")
+  Primera columna: Número de Reynolds
+  Segunda columna: Coeficiente de arrastre
+  Se ejecuta el archivo .py para producir la gr
 */
 
 // Posición y tamaño del cilindro obstáculo
@@ -46,7 +49,7 @@ int main(void){
     double C=2*Fdrag/(rho0*2*R*Ufan0);
     double C2=2*Fdrag/(rho0*2*R*Ufan0*Ufan0);
     // Imprimir
-    data_file << R_n << " " << Fdrag << " " << C << " " << C2 << endl;
+    data_file << R_n << " " << C2 << endl;
   }
   data_file.close();
   
