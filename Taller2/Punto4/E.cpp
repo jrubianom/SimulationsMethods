@@ -42,7 +42,7 @@ int main(void){
     }
     // Calcular fuerza de arrastre
     vector3D F; F=Aire.fuerzas(24, ixc, iyc, R);
-    double Rn=ReynoldsNumber(U, 2*R, nu);
+    double Rn=ReynoldsNumber(Ufan0, 2*R, nu);
     double Flift=F.y();
     double Fdrag=F.x();
     // Imprimir
