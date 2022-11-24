@@ -6,10 +6,9 @@
 using namespace std;
 
 /*
-  El siguiente programa calcula la fuerza de arrastre y el coeficiente
-  de arrastre para varias   velocidades del fluido (Ufan0).
-  Además, en cada iteración computa también el número de Reynolds e imprime
-  los resultados a un archivo de datos ("dragCoeff_vs_reynosldNumber.dat")
+  El siguiente programa calcula la fuerza de Magnus para varias velocidades 
+  del fluido (Ufan0). En cada iteración computa también el número de Reynolds e imprime
+  los resultados a un archivo de datos ("plot_data.dat")
 */
 
 // Posición y tamaño del cilindro obstáculo
@@ -43,10 +42,11 @@ int main(void){
     }
     // Calcular fuerza de arrastre
     vector3D F; F=Aire.fuerzas(24, ixc, iyc, R);
+    double Rn=ReynoldsNumber(U, 2*R, nu);
     double Flift=F.y();
     double Fdrag=F.x();
     // Imprimir
-    data_file << Ufan0 << " " << Ufan0*Ufan0 << " " << Flift << " " << Fdrag << endl;
+    data_file << Ufan0 << " " << Rn << " " << Flift << endl;
   }
   data_file.close();
   
