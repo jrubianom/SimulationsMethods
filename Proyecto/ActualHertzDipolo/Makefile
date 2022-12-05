@@ -8,6 +8,8 @@ Datos/datazeL2.txt: main.cpp
 plot: plotsFiles/a.gp Datos/datazeL2.txt
 	gnuplot plotsFiles/a.gp
 	xdg-open Results/Comparison.pdf
+	gnuplot plotFiles/c.gp
+	xdg-open Results/Power.pdf
 
 contour:
 	gnuplot plotsFiles/BL.gp

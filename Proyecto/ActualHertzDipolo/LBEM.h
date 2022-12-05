@@ -4,6 +4,7 @@
 #include <fstream>
 #include "Parameters.h"
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -353,7 +354,7 @@ void LatticeBoltzmann::Print(void){
 
 
 
-
+//Return the Macroscopic Fields of E,H and B evaluated in a lattice point
 void LatticeBoltzmann::MacroscopicFields(int ix,int iy, int iz,
                                          vector3D &Eprima0,vector3D &H0, vector3D &B0){
   double sigma0,mur0,epsilonr0,prefactor0;
@@ -369,6 +370,7 @@ void LatticeBoltzmann::MacroscopicFields(int ix,int iy, int iz,
 }
 
 
+//Stores in a vector V the values of S*r_hat of a finte set of points over a sphere or radius R
 void LatticeBoltzmann::PowerOverSphere(double R,int Ntheta,int Nphi,vector<double> &V){
   double theta,phi,dtheta,dphi;
   double q1,q2,q3,q4,q5,q6,q7,q8;
@@ -379,11 +381,13 @@ void LatticeBoltzmann::PowerOverSphere(double R,int Ntheta,int Nphi,vector<doubl
     for(int j=0; j < Ntheta; j++){
       theta=j*dtheta;
       SphericalCoordinates(R,theta,phi,x,y,z);
+      x += Lx/2; y += Ly/2; z += Lz/2; //centered in the dipole coordinates
       V[i*Ntheta+j] = PowerAtPoint(x,y,z)/(Z0*J0*J0);
     }
   }
 }
 
+//Returns the interpolated value of S* r_hat of a point x,y,z
 double LatticeBoltzmann::PowerAtPoint(double x,double y, double z){
   int x1 = (int) x, y1 = (int) y, z1 = (int) z;
   double s1,s2,s3,s4,s5,s6,s7,s8;
@@ -396,21 +400,22 @@ double LatticeBoltzmann::PowerAtPoint(double x,double y, double z){
   s7 = Poynting(x1+1,y1+1,z1+1);
   s8 = Poynting(x1,y1+1,z1+1);
   return Interpolate(s1,s2,s3,s4,s5,s6,s7,s8,x,y,z);
-
 }
 
 
 
 
 //--------------Funciones auxuliares
+//given a lattice point x,y,z gives the dot product of the poynting vector S* r_hat
 double LatticeBoltzmann::Poynting(int ix,int iy,int iz){
   vector3D E,H,B;
   MacroscopicFields(ix,iy,iz,E,H,B);
   vector3D S = E^H;
-  vector3D r; r.cargue(ix,iy,iz);
+  vector3D r; r.cargue(ix-Lx/2,iy-Ly/2,iz-Lz/2);
   return S*r/norma(r);
 }
 
+//Gets the closest lattice point to (x,y,z)
 void closest(double x,double y,double z,int &ix,int &iy, int &iz){
   int x0 = (int) x,y0 = (int) y,z0 = (int) z;
   vector3D r; r.cargue(x,y,z);
@@ -429,6 +434,8 @@ void closest(double x,double y,double z,int &ix,int &iy, int &iz){
       }
 }
 
+//Makes an trilinear interpolation at point x,y,z.
+//q_i is the field evaluated in the i-th point of the cube
 double Interpolate(double q1,double q2,double q3,double q4,
                   double q5,double q6,double q7,double q8,
                    double x,double y,double z){
@@ -463,6 +470,7 @@ double Interpolate(double q1,double q2,double q3,double q4,
   return c;
 }
 
+//Transforms from spherical cooridnates to cartesian ones
 void SphericalCoordinates(double R,double theta,double phi,double &x,double &y, double &z){
   x = R*sin(theta)*cos(phi);
   y = R*sin(theta)*sin(phi);
