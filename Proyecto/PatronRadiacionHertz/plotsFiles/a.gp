@@ -20,16 +20,18 @@ p=J0/omega*s**3*(2*pi)**1.5
 mu=2
 eps=1
 Z=sqrt(mu/eps)
-A=Z*k*k*p/(4*pi)
+A=pi*s*s
 
 phi = 0
 
 t=70
 
 abbs(x) = (x*x)**0.5
-f(x) = A/x*abbs(cos(k*x-omega*t+phi)-sin(k*x-omega*t+phi)/(k*x))
+f(x) = A/x*sin(k*x-omega*t)
 g(x) = abbs(x-50)
 h(x) = A/x*(cos(k*x-omega*t+phi)-sin(k*x-omega*t+phi)/(k*x))
-plot "Datos/datazeL2.txt" u 1:(f(g($1))) w l title "teorico","Datos/datazeL2.txt" u 1:(abbs($2)) title "LB"
+R(x) = A/x*(1+1/((k*x)**2))**0.5
+plot "Datos/dataBy.txt" u 1:(abs(h(g($1)))) w l title "teorico","" u 1:(abs($2)) title "LB"
+#plot "Datos/datazeL2.txt" u 1:(abs(f(g($1)))) w l title "teorico","" u 1:(abs($2)) title "LB","" u 1:(R($1)) w l
 #plot "datazeL2.txt" u 1:((abbs($2))/(f(g($1)))) w l
 #plot "Datos/datazeL2.txt" u 1:(h(g($1))) w l title "teorico","" u 1:2 title "LB"

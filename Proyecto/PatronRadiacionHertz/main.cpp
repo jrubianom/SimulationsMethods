@@ -28,8 +28,9 @@ const double J0=0.0001;
 const double alpha=0.5;
 const double T=25;
 const double lamd = C*T;
+const double Z0=sqrt(Mu0/Epsilon0);
 
-void PrintPower(vector<double> &V,int N,double R,string name);
+void PrintPower(vector<double> &V,int N,double R,string name,Theo &formulas,bool flag);
 void compare(vector<double> &V1,vector<double> &V2,int N);
 
 
@@ -37,7 +38,7 @@ int main(){
 
   Parameter Params(Lx,Ly,Lz,Tau,Epsilon0,Mu0,Sigma0,E00,B00,J0,alpha,T);
   LatticeBoltzmann Dipole(Params);
-  int t, tmax=70;
+  int t, tmax=68;
   int N=100;
   vector<double> S(N,0),S_current(N,0),Splus(N,0);
   vector<double> S2(N,0),S2_current(N,0),S2plus(N,0);
@@ -52,35 +53,47 @@ int main(){
 
     if(R < C*t && C*t < R+lamd){
       Dipole.PowerPlanePhi(R,N,S_current);
-      transform(S.begin(),S.end(),S_current.begin(),Splus.begin(),plus<double>());
-      S.assign(Splus.begin(),Splus.end());
-      //compare(S,S_current,N);
+      //transform(S.begin(),S.end(),S_current.begin(),Splus.begin(),plus<double>());
+      //S.assign(Splus.begin(),Splus.end());
+      compare(S,S_current,N);
 
       Dipole.PowerPlaneTheta(R,N,S2_current);
-      transform(S2.begin(),S2.end(),S2_current.begin(),S2plus.begin(),plus<double>());
-      S2.assign(S2plus.begin(),S2plus.end());
-      //compare(S2,S2_current,N);
+      //transform(S2.begin(),S2.end(),S2_current.begin(),S2plus.begin(),plus<double>());
+      //S2.assign(S2plus.begin(),S2plus.end());
+      compare(S2,S2_current,N);
     }
 
   }
 
-  Dipole.Print();
+  Dipole.Print(tmax-1);
   //Print Power data
-  PrintPower(Splus,N,R,"E.txt");
-  PrintPower(S2plus,N,R,"B.txt");
+  Theo formulas; formulas.Init(Params);
+  PrintPower(S,N,R,"EPlane.txt",formulas,1);
+  PrintPower(S2,N,R,"BPlane.txt",formulas,0);
 
   return 0;
 }
 
-void PrintPower(vector<double> &V,int N,double R,string name){
+void PrintPower(vector<double> &V,int N,double R,string name,Theo &formulas,bool flag){
   ofstream file("Datos/"+name);
+  ofstream file2("Datos/Teo"+name);
   double dphi,phi;
+  double Steo;
   dphi = 2*M_PI/(N-1);
   for(int i=0; i < N; i++){
     phi = i*dphi;
-    file << phi << " " << R*R*V[i]/T << endl;
+    if(flag){
+      Steo = formulas.Power(phi+M_PI/2,0,R);
+      file2 << phi << " " << R*R*Steo/(Z0*J0*J0) << endl;
+    }
+    else{
+      Steo = formulas.Power(M_PI/2,0,R);
+      file2 << phi << " " << R*R*Steo/(Z0*J0*J0) << endl;
+    }
+    file << phi << " " << R*R*V[i] << endl;
   }
   file.close();
+  file2.close();
 }
 
 

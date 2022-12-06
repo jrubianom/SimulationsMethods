@@ -2,9 +2,9 @@
 #include<cmath>
 #include "Vector.h"
 #include <fstream>
-#include "Parameters.h"
 #include <vector>
 #include <algorithm>
+#include "Theory.h"
 
 using namespace std;
 
@@ -15,7 +15,7 @@ double Interpolatebi(double q1,double q2,double q3,double q4,
                      double x,double y);
 
 void SphericalCoordinates(double R,double theta,double phi,double &x,double &y, double &z);
-
+double smooth(double a,double b,double beta,double z);
 
 //--------------------- class LatticeBoltzmann ------------
 class LatticeBoltzmann{
@@ -37,6 +37,7 @@ class LatticeBoltzmann{
     double E00,B00,J0;
     double alpha; //alpha = parameter related with width of the Gaussian
     double T,lambda,k,omega;
+    Theo formulas;
 
   public:
     LatticeBoltzmann(Parameter Params0);
@@ -79,7 +80,7 @@ class LatticeBoltzmann{
     double PowerAtPointPhi(double x,double z);
     void PowerPlanePhi(double R,int Ntheta,vector<double> &V);
     void PowerPlaneTheta(double R,int Nphi,vector<double> &V);
-    void Print(void);
+    void Print(double t);
 };
 
 
@@ -94,6 +95,7 @@ LatticeBoltzmann::LatticeBoltzmann(Parameter Params0){
   alpha=Params0.alpha;
   T = Params0.T;
   omega = 2*M_PI/T; lambda = C*T; k = omega/C;
+  formulas.Init(Params0);
 
   int ix,iy,iz,alpha,r,p,i,j;
   //Velocity vectors V[p][i]=V^p_i (in components)
@@ -210,8 +212,10 @@ vector3D LatticeBoltzmann::H(vector3D & B0,double Mur){
 
 vector3D LatticeBoltzmann::JprimaSource(int ix,int iy,int iz,int t){
   vector3D Jprima0;
-  double Jz;
-  Jz=J0*exp(-alpha*(pow((ix-Lx/2),2)+pow((iy-Ly/2),2)+pow((iz-Lz/2),2)))*sin(omega*t);
+  double Jz, beta = 100;
+  double J0p = J0*smooth(-lambda/4.0,lambda/4.0,beta,iz-Lz/2);
+  //Jz=J0p*exp(-alpha*(pow((ix-Lx/2),2)+pow((iy-Ly/2),2)))*sin(omega*t)*cos(k*abs(iz-Lz/2));
+  Jz=J0*exp(-alpha*( pow((ix-Lx/2),2) + pow((iy-Ly/2),2) + pow(iz-Lz/2,2)) ) *sin(omega*t);
   Jprima0.cargue(0,0,Jz);
   return Jprima0;
 }
@@ -340,11 +344,12 @@ void LatticeBoltzmann::Advection(void){
       }
 }
 
-void LatticeBoltzmann::Print(void){
+void LatticeBoltzmann::Print(double t){
   int ix,iy=Ly/2,iz,r,p,i,j;
-  double rhoc0; vector3D B0,Eprima,H0; double E2,B2;
+  double rhoc0; vector3D B0,Eprima,H0; double E2,B2,Eteo,Bteo;
   ofstream file("Datos/data.txt");
-  ofstream file2("Datos/datazeL2.txt");
+  ofstream file2("Datos/dataBy.txt");
+  ofstream file3("Datos/dataEz.txt");
   for(ix=0;ix < Lx; ix++)
     for(iz=0;iz<Lz;iz++){
       //Compute the electromagnetic constants
@@ -352,11 +357,18 @@ void LatticeBoltzmann::Print(void){
       //Print
       B2 = B0.y()/J0;
       file<<ix<<" "<<iz<<" "<<B2<<endl;
-      if(iz==Lz/2)
-        file2 << ix << " " << B2 << endl;
+      if(iz==Lz/2){
+        E2 = -Eprima.z()/(J0*Z0);
+        Eteo = formulas.E_z(abs(ix-Lx/2),t)/(J0*Z0);
+        Bteo = formulas.B_y(abs(ix-Lx/2),t)/J0;
+        file2 << ix << " " << B2 << " " << Bteo <<endl;
+        file3 << ix << " " << E2 << " " << Eteo << endl;
+      }
+
     }
   file.close();
   file2.close();
+  file3.close();
 }
 
 
@@ -535,4 +547,9 @@ double Interpolatebi(double q1,double q2,double q3,double q4,
   double u = x-ix, v = y-iy;
   double qxy = q1*(1-u)*(1-v)+q2*u*(1-v)+q3*(1-u)*v+q4*u*v;
   return qxy;
+}
+
+
+double smooth(double a,double b,double beta, double z){
+  return tanh(beta*(z-a)) - tanh(beta*(z-b));
 }
