@@ -1,0 +1,14 @@
+lambda = 12
+
+R = 3*lambda
+tmax = 4T
+
+//Driven elements
+  lxs=0,lys=0,lzs=lamd*0.45,betaS=5
+
+  //Parasitic elements
+  lxd=2,lyd=2,lzd=lamd*0.55
+  lxr=2,lyr=2,lzr=lamd*0.56
+  SigmaP = 16,beta = 0.5
+  xd = lamd*0.125+ixs,spacing=0.2*lamd
+  xr = ixs - lamd*0.35;

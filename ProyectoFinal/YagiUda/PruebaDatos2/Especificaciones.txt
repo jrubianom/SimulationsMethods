@@ -1,0 +1,25 @@
+lambda = 12
+
+R = 3*lambda
+tmax = 4T
+
+//Driven elements
+  lxs=0,lys=0,lzs=lamd*0.45,betaS=5
+
+  //Parasitic elements
+
+  SigmaP = 16,beta = 0.5
+
+Reflector:
+   xr = ixs - lamd*0.35;
+   lxr=2,lyr=2,lzr=lamd*0.56
+
+Director:
+
+  lxd=2,lyd=2,
+  xd = lamd*0.125+ixs
+  spacing=0.2*lamd
+
+  lzd1=lamd*0.55
+  lzd2=lamd*0.4
+  lzd3=lamd*0.35
